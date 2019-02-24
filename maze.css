@@ -1,5 +1,6 @@
 body{
 	margin: 0px;
+  overflow: hidden;
 }
 
 #displayGrid{
@@ -14,6 +15,13 @@ body{
 
 #invalidMove{
 	display: none;
+}
+
+#GUI-header{
+  display: table;
+  height: 50px;
+  width: 100%;
+  background-color: pink;
 }
 
 
