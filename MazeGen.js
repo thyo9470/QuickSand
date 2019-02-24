@@ -11,7 +11,12 @@ var width = 11;
 /*
   Setup
 */
-function blank_maze(maze, width, height, depth){
+
+
+/*
+  Create new blank maze
+*/
+function blank_maze(){
   for(let z = 0; z < depth; z++){
     maze.push([]);
     for(let y = 0; y < height; y++){
@@ -29,40 +34,14 @@ function blank_maze(maze, width, height, depth){
       }
     }
   }
-  /*let layer = [];
-  let wall_layer = [];
-  for(let y = 0; y < height; y++){
-    let row = [];
-    let wall_row = [];
-    for(let x = 0; x < width; x++){
-      if( (x%2 == 0) && (y%2 == 0) ){
-        row.push(0);
-      }else{
-        row.push(1); 
-      }
-      wall_row.push(1);
-    }
-    layer.push(row);
-    wall_layer.push(wall_row);
-  }
-
-  for(let z = 0; z < depth; z++){
-    if(z%2 == 0){
-      maze.push(layer);
-    }else{
-      maze.push(wall_layer); 
-    }
-  }*/
 }
 
-function has_wall(arr, search){
-  return arr.some( row => { return ( row[0] == search[0] && row[1] == search[1] && row[2] == search[2] ) } )
-}
-
+// gen random int given a max int
 function getRandomInt(max) {
   return Math.floor(Math.random() * Math.floor(max));
 }
 
+// radnomize a given array
 function shuffle(arr){
   for(let i = 0; i < arr.length; i++){
     let new_pos = getRandomInt(arr.length);
@@ -73,10 +52,13 @@ function shuffle(arr){
   }
 }
 
+/*
+  Creates a random 3d maze using randomized Kruskel's algorithm
+*/
 function setup_maze(maze){
-  // variables t keep track of generation
-  let walls = [];  
-  let cells = [];
+  // variables to keep track of generation
+  let walls = []; // all walls on board that seperate two empty places
+  let cells = []; // list of connecting cells
 
   // setup variables
   for(let z = 0; z < maze.length; z++){
@@ -102,6 +84,7 @@ function setup_maze(maze){
 
   shuffle(walls);
 
+  // loop through walls and connect each side if not connected in some other place
   walls.forEach(function(coord){
     
     /* get cells the wall seperates */
@@ -125,11 +108,14 @@ function setup_maze(maze){
       cell2[2] += 1;
     }   
 
+    // find the cell arrays each of the cells we just found are in
     let cell1_index = -1;
     let cell2_index = -1;
 
+    // loop through cells to find cell[1/2]_index
     for(let i = 0; i < cells.length; i++){
       
+      // check if cell[1/2] in currents cells array
       cells[i].forEach(function(cell){
         // check for cell1
         if( (cell[0] == cell1[0]) && (cell[1] == cell1[1]) && (cell[2] == cell1[2]) ){
@@ -144,10 +130,10 @@ function setup_maze(maze){
 
     }
 
+    // if cells not connected remove wall and connect
     if( cell1_index != cell2_index ){
       let temp = cells[cell2_index];
       temp.forEach(function(temp_cell){
-        //console.log(temp_cell)
         cells[cell1_index].push(temp_cell);
       })
       cells.splice(cell2_index, 1); 
@@ -158,6 +144,9 @@ function setup_maze(maze){
 
 }
 
+/*
+  print a given layer of the maze
+*/
 function print_layer(layer){
   let layer_out = [];
   for(let y = 0; y < layer.length; y++){
@@ -173,20 +162,9 @@ function print_layer(layer){
   console.log(layer_out.join("\n"));
 }
 
+// testing the maze
 blank_maze(maze, width, height, depth);
 setup_maze(maze);
 print_layer(maze[0]);
 print_layer(maze[1]);
 print_layer(maze[2]);
-
-  for(let z = 1; z < depth; z++){
-    for(let y = 0; y < height; y++){
-      for(let x = 0; x < width; x++){
-        if(maze[z][y][x] == 1){
-          maze[0][y][x] += 1
-        }
-      }
-    }
-  }
-
-print_layer(maze[0]);
