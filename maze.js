@@ -238,7 +238,10 @@ window.onresize = function(event){
 function makeDisplay(layer, p){
 	//make a grid in the element referenced.
 	var env = maze[layer];
+<<<<<<< HEAD
 	//console.log(env);
+=======
+>>>>>>> master
 	cols = env[0].length;
 	rows = env.length;
 	
@@ -358,9 +361,12 @@ function goUp(){
 	}
 }
 
+const message = document.getElementById("invalidMove");
+const time = document.getElementById("time");
 
-document.addEventListener('keydown', event => {
-	document.getElementById("invalidMove").style.display = "none";
+function input_handler(event)
+{
+  message.style.display = "none";
 	switch(event.key)
 	{
 		case "ArrowDown":
@@ -385,7 +391,7 @@ document.addEventListener('keydown', event => {
 		break;
 		case "q":
 		if(!player.move(0, 0, -1)){
-			document.getElementById("invalidMove").style.display = "block";
+			message.style.display = "block";
 		}else{
 			player.move(0, 0, -1); //implementing this so that we are able to check if it is actually a valid move (we do this above).
 			goUp();
@@ -393,14 +399,40 @@ document.addEventListener('keydown', event => {
 		break;
 		case "e":
 		if(!player.move(0, 0, 1)){
-			document.getElementById("invalidMove").style.display = "block";
+			message.style.display = "block";
 		}else{
 			player.move(0, 0, 1);
 			goDown();
 		}
 		break;
 	}
-});
+}
+
+/**
+ * Timer
+ */
+class Timer
+{
+    constructor()
+    {
+        this.seconds = 60;
+        this.step = 1000;
+        this.countdown_date = Date.now() + (1000 * this.seconds);
+        this.counter = setInterval(() => {
+            let seconds_remaining = Math.floor((this.countdown_date - Date.now()) / 1000);
+            time.textContent = seconds_remaining;
+    
+            if(Date.now() > this.countdown_date)
+            {
+                clearInterval(this.counter);
+                time.textContent = 0;
+
+                // Stops the game, or at least the player from moving
+                document.removeEventListener('keydown', input_handler, true);
+            }
+        }, this.step);
+    }
+}
 
 function new_game(){
   height += 2;
@@ -411,6 +443,7 @@ function new_game(){
 }
 
 new_game();
-
+timer = new Timer();
+document.addEventListener('keydown', input_handler, true);
 makeDisplay(currentLayer, player); //parameter: z-layer, player class
 

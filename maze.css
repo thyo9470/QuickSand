@@ -1,6 +1,11 @@
+@import url('https://fonts.googleapis.com/css?family=Press+Start+2P');
 body{
 	margin: 0px;
+<<<<<<< HEAD
   overflow: hidden;
+=======
+	font-family: 'Press Start 2P', cursive;
+>>>>>>> master
 }
 
 #displayGrid{
@@ -13,10 +18,14 @@ body{
 	display: grid;
 }
 
-#invalidMove{
-	display: none;
+#invalidMove,
+#time{
+	color: white;
+	position: fixed;
+	margin: 10px;
 }
 
+<<<<<<< HEAD
 #GUI-header{
   display: table;
   height: 50px;
@@ -25,6 +34,13 @@ body{
 }
 
 
+=======
+#invalidMove
+{
+	display: none;
+	left: 40px;
+}
+>>>>>>> master
 
 /*.box {
 	grid-row: auto;
