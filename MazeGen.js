@@ -5,8 +5,8 @@
 var maze = [];
 
 var depth = 3;
-var height = 11;
-var width = 11;
+var height = 13;
+var width = 13;
 
 /*
   Setup
@@ -22,8 +22,8 @@ function blank_maze(){
     for(let y = 0; y < height; y++){
       maze[z].push([]);
       for(let x = 0; x < width; x++){
-        if(z%2 == 0){
-          if( (x%2 == 0) && (y%2 == 0) ){
+        if( (z%2 == 0) && ( x > 0 ) && ( y > 0) && (x < width-1) && ( y < height-1 )){
+          if( (x%2 == 1) && (y%2 == 1) ){
             maze[z][y].push(0); 
           }else{
             maze[z][y].push(1); 
@@ -62,20 +62,21 @@ function setup_maze(maze){
 
   // setup variables
   for(let z = 0; z < maze.length; z++){
-    for(let y = 0; y < maze[0].length; y++){
-      for(let x = 0; x < maze[0][0].length; x++){
+    for(let y = 1; y < maze[0].length-1; y++){
+      for(let x = 1; x < maze[0][0].length-1; x++){
         cells.push([[x,y,z]]);
-        // if even layer 
-        if( ((x%2 == 1) && (y%2 == 0)) && (z%2 == 0) ){
-          walls.push([x,y,z]);
-        }
 
+        // if even layer 
         if( ((x%2 == 0) && (y%2 == 1)) && (z%2 == 0) ){
           walls.push([x,y,z]);
         }
 
+        if( ((x%2 == 1) && (y%2 == 0)) && (z%2 == 0) ){
+          walls.push([x,y,z]);
+        }
+
         // if odd layer
-        if( (x%2 == 0) && (y%2 == 0) && (z%2 == 1) ){
+        if( (x%2 == 1) && (y%2 == 1) && (z%2 == 1) ){
           walls.push([x,y,z]);
         }
       }
@@ -93,12 +94,12 @@ function setup_maze(maze){
     let cell2 = coord.slice();
     
     // cells to right/left
-    if( coord[0]%2 == 1 ){
+    if( coord[0]%2 == 0 ){
       cell1[0] -= 1; 
       cell2[0] += 1;
     }
     // cells to up/down
-    else if( coord[1]%2 == 1 ){
+    else if( coord[1]%2 == 0 ){
       cell1[1] -= 1;
       cell2[1] += 1;
     }
@@ -163,7 +164,7 @@ function print_layer(layer){
 }
 
 // testing the maze
-blank_maze(maze, width, height, depth);
+blank_maze();
 setup_maze(maze);
 print_layer(maze[0]);
 print_layer(maze[1]);
