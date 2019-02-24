@@ -12,11 +12,18 @@ body{
 	display: grid;
 }
 
-#invalidMove{
-	display: none;
+#invalidMove,
+#time{
+	color: white;
+	position: fixed;
+	margin: 10px;
 }
 
-
+#invalidMove
+{
+	display: none;
+	left: 40px;
+}
 
 /*.box {
 	grid-row: auto;
