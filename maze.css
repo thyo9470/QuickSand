@@ -7,6 +7,10 @@ body{
 	display: grid;
 }
 
+#invalidMove{
+	display: none;
+}
+
 /*.box {
 	grid-row: auto;
 	grid-column: auto;
