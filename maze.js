@@ -16,9 +16,14 @@ var currentLayer = 0; //global counter for which maze we are displaying.
 
 //for maze generation
 var maze = [];
+var maze_states = {
+  empty: 0,
+  wall: 1,
+  end: 2
+}
 var depth = 5; //has to be odd
-var height = 21;// based on the screen height+width
-var width = 21;// based on the screen height+width
+var height = 3;// based on the screen height+width
+var width = 3;// based on the screen height+width
 
 /*
   Setup
@@ -40,6 +45,7 @@ class Player
       this.x += x;
       this.y += y;
       this.z += z;
+      this.check_collision();
       return true;
     }
     return false;
@@ -56,6 +62,13 @@ class Player
     }
     return false;
   }
+
+  check_collision()
+  {
+    if(maze[this.z][this.y][this.x] == maze_states.end){
+      new_game();
+    }
+  }
 }
 
 
@@ -63,6 +76,7 @@ class Player
   Create new blank maze
 */
 function blank_maze(){
+  maze = [];
   for(let z = 0; z < depth; z++){
     maze.push([]);
     for(let y = 0; y < height; y++){
@@ -189,6 +203,11 @@ function setup_maze(maze){
 
   });  
 
+
+  // adding things to maze
+
+  maze[0][maze[0].length-2][maze[0][0].length-2] = maze_states.end; // ending place
+
 }
 
 /*
@@ -224,6 +243,9 @@ function makeDisplay(layer, p){
 	}
 
 	grid = document.createElement("div");
+  let display_height = 
+  grid.style.width = width * 10 + "px";
+  grid.style.height = height * 10 + "px";
 	grid.className = "maze";
 	grid.id = "displayGrid";
 	grid.style.display = "Grid";
@@ -351,10 +373,15 @@ document.addEventListener('keydown', event => {
 	}
 });
 
+function new_game(){
+  height += 2;
+  width += 2;
+  blank_maze();
+  setup_maze(maze);
+  player = new Player();
+}
 
-blank_maze();
-setup_maze(maze);
+new_game();
 
-player = new Player();
 makeDisplay(currentLayer, player); //parameter: z-layer, player class
 
