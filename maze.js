@@ -13,17 +13,26 @@ var numMainChildren = main.children.length;
 
 //for maze display
 var currentLayer = 0; //global counter for which maze we are displaying.
+var currentLevel = 0;
 
 //for maze generation
 var maze = [];
 var maze_states = {
   empty: 0,
   wall: 1,
-  end: 2
+  goal: 2
 }
+var color_pal = {
+  player: "#AAC0AA",
+  nothing:"#F4B886", 
+  down: "#A18276",
+  up: "#FCDFA6",
+  both: "#CBE896",
+  wall: "#191919",
+  goal: "#000000"}
 var depth = 5; //has to be odd
-var height = 31;// based on the screen height+width
-var width = 31;// based on the screen height+width
+var height = 3;// based on the screen height+width
+var width = 3;// based on the screen height+width
 
 var block_size = 50;
 
@@ -67,7 +76,7 @@ class Player
 
   check_collision()
   {
-    if(maze[this.z][this.y][this.x] == maze_states.end){
+    if(maze[this.z][this.y][this.x] == maze_states.goal){
       new_game();
     }
   }
@@ -208,7 +217,7 @@ function setup_maze(maze){
 
   // adding things to maze
 
-  maze[0][maze[0].length-2][maze[0][0].length-2] = maze_states.end; // ending place
+  maze[0][maze[0].length-2][maze[0][0].length-2] = maze_states.goal; // ending place
 
 }
 
@@ -238,10 +247,6 @@ window.onresize = function(event){
 function makeDisplay(layer, p){
 	//make a grid in the element referenced.
 	var env = maze[layer];
-<<<<<<< HEAD
-	//console.log(env);
-=======
->>>>>>> master
 	cols = env[0].length;
 	rows = env.length;
 	
@@ -303,25 +308,25 @@ function makeDisplay(layer, p){
       if(env[i][j] == 0){
 				if(layer >= 2 && layer <= depth-2){
 					if(maze[layer-1][i][j] != 1 && maze[layer+1][i][j] != 1){
-						color = "lightgreen";
+						color = color_pal.both;
 					}else if(maze[layer-1][i][j] != 1){
 						//can only go up
-						color = "lightblue";
+						color = color_pal.up;
 					}else if(maze[layer+1][i][j] != 1){
 						//can only go down
-						color = "darkblue";
+						color = color_pal.down;
 					}else{
-						box.style.backgroundColor = "blue";
+						color = color_pal.nothing;
 					}
 				}else if(layer >= 1 && maze[layer-1][i][j] != 1){
-						color = "lightblue";
+						color = color_pal.up;
 				}else if(layer <= depth-2 && maze[layer+1][i][j] != 1){
-						color = "darkblue";
+						color = color_pal.down;
 				}else{
-					color = "blue";
+					color = color_pal.nothing;
 				}
 			}else if(env[i][j] == 1){
-				color = "black";
+				color = color_pal.wall;
 			}
       if(p.x == j && p.y == i && p.z == layer){
         // Prevent player character from blocking the tile colors!
@@ -331,7 +336,7 @@ function makeDisplay(layer, p){
         // box.style.backgroundSize = "1000px 1000px";
         // box.style.backgroundRepeat = "no-repeat";
         // box.style.backgroundBlendMode = "multiply";
-        box.style.background = "linear-gradient(45deg, " + color + " 50%, #00FFFF 50%)";// "linear-gradient(45 deg, " + color + ", 70%, " + ", red, 30%";
+        box.style.background = "linear-gradient(45deg, " + color + " 50%, " + color_pal.player + " 50%)";
       }else{
         box.style.backgroundColor = color;
       }
@@ -415,7 +420,7 @@ class Timer
 {
     constructor()
     {
-        this.seconds = 60;
+        this.seconds = 25;
         this.step = 1000;
         this.countdown_date = Date.now() + (1000 * this.seconds);
         this.counter = setInterval(() => {
@@ -429,21 +434,27 @@ class Timer
 
                 // Stops the game, or at least the player from moving
                 document.removeEventListener('keydown', input_handler, true);
+                alert("you lose!\npress ok to restart");
+                window.location.reload(false); 
             }
         }, this.step);
     }
 }
 
 function new_game(){
+  currentLevel += 1;
   height += 2;
   width += 2;
+  //depth += 2;
   blank_maze();
   setup_maze(maze);
   player = new Player();
+  document.getElementById("level").innerHTML = currentLevel;
+  timer.countdown_date += 2000 * currentLevel;
 }
 
-new_game();
 timer = new Timer();
+new_game();
 document.addEventListener('keydown', input_handler, true);
 makeDisplay(currentLayer, player); //parameter: z-layer, player class
 
