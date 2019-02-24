@@ -422,6 +422,10 @@ class Timer
 }
 
 const oddsForPickup = 20;
+
+/**
+ * Recreates the pickup dictionary based on the new maze width and height 
+ * */
 function spawn_pickups()
 {
   pickups = new Object();
@@ -441,6 +445,11 @@ function spawn_pickups()
 }
 
 const pickupTimeIncrease = 5000;
+
+/**
+ * Will check to see if a pickup is at the player,
+ * and will update the timer if there is
+ */
 function check_pickup()
 {
   if(pickups[[player.z, player.y, player.x]] == true)
