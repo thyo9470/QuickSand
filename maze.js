@@ -25,6 +25,9 @@ var depth = 5; //has to be odd
 var height = 3;// based on the screen height+width
 var width = 3;// based on the screen height+width
 
+// Stores the pickups with the xyz position as keys
+pickups = new Object();
+
 /*
   Setup
 */
@@ -70,7 +73,6 @@ class Player
     }
   }
 }
-
 
 /*
   Create new blank maze
@@ -231,6 +233,7 @@ function print_layer(layer){
 
 // FOR DISPLAYING THE MAZE
 function makeDisplay(layer, p){
+  check_pickup();
 	//make a grid in the element referenced.
 	var env = maze[layer];
 	cols = env[0].length;
@@ -273,7 +276,12 @@ function makeDisplay(layer, p){
       var color = "";
 
       if(env[i][j] == 0){
-				if(layer >= 2 && layer <= depth-2){
+        if(pickups[[layer, i, j]] == true)
+        {
+          color = "yellow";
+          box.style.innerHTML = "^";
+        }
+				else if(layer >= 2 && layer <= depth-2){
 					if(maze[layer-1][i][j] != 1 && maze[layer+1][i][j] != 1){
 						color = "lightgreen";
 						box.style.innerHTML = "^/v";
@@ -384,7 +392,7 @@ function input_handler(event)
 			goDown();
 		}
 		break;
-	}
+  }
 }
 
 /**
@@ -413,11 +421,41 @@ class Timer
     }
 }
 
+const oddsForPickup = 20;
+function spawn_pickups()
+{
+  pickups = new Object();
+  for(let x = 0; x < width; x++)
+  {
+    for(let y = 0; y < height; y++)
+    {
+      for(let z = 0; z < depth; z++)
+      {
+        if(getRandomInt(oddsForPickup) == 0 && maze[z][y][x] == 0)
+        {
+          pickups[[z, y, x]] = true;
+        }
+      }
+    }
+  }
+}
+
+const pickupTimeIncrease = 5000;
+function check_pickup()
+{
+  if(pickups[[player.z, player.y, player.x]] == true)
+  {
+    timer.countdown_date += pickupTimeIncrease;
+    pickups[[player.z, player.y, player.x]] = false
+  }
+}
+
 function new_game(){
   height += 2;
   width += 2;
   blank_maze();
   setup_maze(maze);
+  spawn_pickups();
   player = new Player();
 }
 
