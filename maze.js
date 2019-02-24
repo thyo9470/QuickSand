@@ -271,39 +271,51 @@ function makeDisplay(layer, p){
 			box.className = "box";
 			box.id = "box" + i + j;
 			
+      var color = "";
 
-			if(p.x == j && p.y == i && p.z == layer){
-				box.style.backgroundColor = "red";
-			}else if(env[i][j] == 0){
+      if(env[i][j] == 0){
 				if(layer >= 2 && layer <= depth-2){
 					if(maze[layer-1][i][j] != 1 && maze[layer+1][i][j] != 1){
-						box.style.backgroundColor = "lightgreen";
+						color = "lightgreen";
 						box.style.innerHTML = "^/v";
 					}else if(maze[layer-1][i][j] != 1){
 						//can only go up
-						box.style.backgroundColor = "lightblue";
+						color = "lightblue";
 						box.style.innerHTML = "^";
 					}else if(maze[layer+1][i][j] != 1){
 						//can only go down
-						box.style.backgroundColor = "darkblue";
+						color = "darkblue";
 						box.style.innerHTML = "v";
 					}else{
 						box.style.backgroundColor = "blue";
 					}
 				}else if(layer >= 1 && maze[layer-1][i][j] != 1){
-						box.style.backgroundColor = "lightblue";
+						color = "lightblue";
 						box.style.innerHTML = "^";
 				}else if(layer <= depth-2 && maze[layer+1][i][j] != 1){
-						box.style.backgroundColor = "darkblue";
+						color = "darkblue";
 						box.style.innerHTML = "v";
 				}else{
-					box.style.backgroundColor = "blue";
+					color = "blue";
 					box.style.innerHTML = "-";
 				}
 			}else if(env[i][j] == 1){
-				box.style.backgroundColor = "black";
+				color = "black";
 				box.innerHTML = "Wall at (" + i + "," + j + ")";
 			}
+      if(p.x == j && p.y == i && p.z == layer){
+        // Prevent player character from blocking the tile colors!
+        // box.style.background =  `radial-gradient(red 0%, red 70%, transparent 70%, transparent 100%) 0 0,
+        //                         radial-gradient(` + color + ` 0%, ` + color + ` 70%, transparent 70%, transparent 100%) 0 0`;
+        // box.style.backgroundPosition = "left, right";
+        // box.style.backgroundSize = "1000px 1000px";
+        // box.style.backgroundRepeat = "no-repeat";
+        // box.style.backgroundBlendMode = "multiply";
+        box.style.background = "linear-gradient(45deg, " + color + " 50%, #00FFFF 50%)";// "linear-gradient(45 deg, " + color + ", 70%, " + ", red, 30%";
+      }else{
+        box.style.backgroundColor = color;
+      }
+
 			grid.appendChild(box);
 		}
 	}
