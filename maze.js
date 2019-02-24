@@ -22,8 +22,10 @@ var maze_states = {
   end: 2
 }
 var depth = 5; //has to be odd
-var height = 3;// based on the screen height+width
-var width = 3;// based on the screen height+width
+var height = 31;// based on the screen height+width
+var width = 31;// based on the screen height+width
+
+var block_size = 50;
 
 /*
   Setup
@@ -228,11 +230,18 @@ function print_layer(layer){
   console.log(layer_out.join("\n"));
 }
 
+window.onresize = function(event){
+  makeDisplay(currentLayer, player); //parameter: z-layer, player class
+}
 
 // FOR DISPLAYING THE MAZE
 function makeDisplay(layer, p){
 	//make a grid in the element referenced.
 	var env = maze[layer];
+<<<<<<< HEAD
+	//console.log(env);
+=======
+>>>>>>> master
 	cols = env[0].length;
 	rows = env.length;
 	
@@ -242,9 +251,7 @@ function makeDisplay(layer, p){
 	}
 
 	grid = document.createElement("div");
-  let display_height = 
-  grid.style.width = width * 10 + "px";
-  grid.style.height = height * 10 + "px";
+
 	grid.className = "maze";
 	grid.id = "displayGrid";
 	grid.style.display = "Grid";
@@ -269,6 +276,27 @@ function makeDisplay(layer, p){
 			//give the box the correct css.
 			box.className = "box";
 			box.id = "box" + i + j;
+
+      // make sure grid fits screen
+      let size_limit_window = ( window.innerHeight-50 > window.innerWidth ) ? window.innerWidth : window.innerHeight-50;
+
+
+      let display_height = height * block_size; 
+      let display_width = width * block_size; 
+      let size_limit = ( display_height > display_width ) ? display_width : display_height;
+
+      if(size_limit_window > size_limit){
+        grid.style.width = width * 50 + "px";
+        grid.style.height = height * 50 + "px";
+        box.style.height = "50px";
+        box.style.width = "50px";
+      }else{
+        grid.style.width = size_limit_window + "px";
+        grid.style.height = size_limit_window + "px";
+        
+        box.style.height = size_limit_window/height;
+        box.style.width = size_limit_window/width;
+      }
 			
       var color = "";
 
@@ -276,31 +304,24 @@ function makeDisplay(layer, p){
 				if(layer >= 2 && layer <= depth-2){
 					if(maze[layer-1][i][j] != 1 && maze[layer+1][i][j] != 1){
 						color = "lightgreen";
-						box.style.innerHTML = "^/v";
 					}else if(maze[layer-1][i][j] != 1){
 						//can only go up
 						color = "lightblue";
-						box.style.innerHTML = "^";
 					}else if(maze[layer+1][i][j] != 1){
 						//can only go down
 						color = "darkblue";
-						box.style.innerHTML = "v";
 					}else{
 						box.style.backgroundColor = "blue";
 					}
 				}else if(layer >= 1 && maze[layer-1][i][j] != 1){
 						color = "lightblue";
-						box.style.innerHTML = "^";
 				}else if(layer <= depth-2 && maze[layer+1][i][j] != 1){
 						color = "darkblue";
-						box.style.innerHTML = "v";
 				}else{
 					color = "blue";
-					box.style.innerHTML = "-";
 				}
 			}else if(env[i][j] == 1){
 				color = "black";
-				box.innerHTML = "Wall at (" + i + "," + j + ")";
 			}
       if(p.x == j && p.y == i && p.z == layer){
         // Prevent player character from blocking the tile colors!
