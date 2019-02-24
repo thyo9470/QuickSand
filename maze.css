@@ -1,0 +1,13 @@
+body{
+	margin: 0px;
+}
+
+.grid-container{
+	padding: 0;
+	display: grid;
+}
+
+/*.box {
+	grid-row: auto;
+	grid-column: auto;
+}*/
