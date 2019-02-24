@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Press+Start+2P');
 body{
 	margin: 0px;
+  overflow: hidden;
 	font-family: 'Press Start 2P', cursive;
 }
 
@@ -17,9 +18,20 @@ body{
 #invalidMove,
 #time{
 	color: white;
-	position: fixed;
-	margin: 10px;
 }
+
+p{
+  padding-left: 5px;
+  float:left;
+}
+
+#GUI-header{
+  display: table;
+  height: 50px;
+  width: 100%;
+  background-color: pink;
+}
+
 
 #invalidMove
 {
@@ -27,7 +39,3 @@ body{
 	left: 40px;
 }
 
-/*.box {
-	grid-row: auto;
-	grid-column: auto;
-}*/

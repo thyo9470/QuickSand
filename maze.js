@@ -13,17 +13,28 @@ var numMainChildren = main.children.length;
 
 //for maze display
 var currentLayer = 0; //global counter for which maze we are displaying.
+var currentLevel = 0;
 
 //for maze generation
 var maze = [];
 var maze_states = {
   empty: 0,
   wall: 1,
-  end: 2
+  goal: 2
 }
+var color_pal = {
+  player: "#AAC0AA",
+  nothing:"#F4B886", 
+  down: "#A18276",
+  up: "#FCDFA6",
+  both: "#CBE896",
+  wall: "#191919",
+  goal: "#000000"}
 var depth = 5; //has to be odd
 var height = 3;// based on the screen height+width
 var width = 3;// based on the screen height+width
+
+var block_size = 50;
 
 /*
   Setup
@@ -65,7 +76,7 @@ class Player
 
   check_collision()
   {
-    if(maze[this.z][this.y][this.x] == maze_states.end){
+    if(maze[this.z][this.y][this.x] == maze_states.goal){
       new_game();
     }
   }
@@ -206,7 +217,7 @@ function setup_maze(maze){
 
   // adding things to maze
 
-  maze[0][maze[0].length-2][maze[0][0].length-2] = maze_states.end; // ending place
+  maze[0][maze[0].length-2][maze[0][0].length-2] = maze_states.goal; // ending place
 
 }
 
@@ -228,6 +239,9 @@ function print_layer(layer){
   console.log(layer_out.join("\n"));
 }
 
+window.onresize = function(event){
+  makeDisplay(currentLayer, player); //parameter: z-layer, player class
+}
 
 // FOR DISPLAYING THE MAZE
 function makeDisplay(layer, p){
@@ -242,9 +256,7 @@ function makeDisplay(layer, p){
 	}
 
 	grid = document.createElement("div");
-  let display_height = 
-  grid.style.width = width * 10 + "px";
-  grid.style.height = height * 10 + "px";
+
 	grid.className = "maze";
 	grid.id = "displayGrid";
 	grid.style.display = "Grid";
@@ -269,38 +281,52 @@ function makeDisplay(layer, p){
 			//give the box the correct css.
 			box.className = "box";
 			box.id = "box" + i + j;
+
+      // make sure grid fits screen
+      let size_limit_window = ( window.innerHeight-50 > window.innerWidth ) ? window.innerWidth : window.innerHeight-50;
+
+
+      let display_height = height * block_size; 
+      let display_width = width * block_size; 
+      let size_limit = ( display_height > display_width ) ? display_width : display_height;
+
+      if(size_limit_window > size_limit){
+        grid.style.width = width * 50 + "px";
+        grid.style.height = height * 50 + "px";
+        box.style.height = "50px";
+        box.style.width = "50px";
+      }else{
+        grid.style.width = size_limit_window + "px";
+        grid.style.height = size_limit_window + "px";
+        
+        box.style.height = size_limit_window/height;
+        box.style.width = size_limit_window/width;
+      }
 			
       var color = "";
 
       if(env[i][j] == 0){
 				if(layer >= 2 && layer <= depth-2){
 					if(maze[layer-1][i][j] != 1 && maze[layer+1][i][j] != 1){
-						color = "lightgreen";
-						box.style.innerHTML = "^/v";
+						color = color_pal.both;
 					}else if(maze[layer-1][i][j] != 1){
 						//can only go up
-						color = "lightblue";
-						box.style.innerHTML = "^";
+						color = color_pal.up;
 					}else if(maze[layer+1][i][j] != 1){
 						//can only go down
-						color = "darkblue";
-						box.style.innerHTML = "v";
+						color = color_pal.down;
 					}else{
-						box.style.backgroundColor = "blue";
+						color = color_pal.nothing;
 					}
 				}else if(layer >= 1 && maze[layer-1][i][j] != 1){
-						color = "lightblue";
-						box.style.innerHTML = "^";
+						color = color_pal.up;
 				}else if(layer <= depth-2 && maze[layer+1][i][j] != 1){
-						color = "darkblue";
-						box.style.innerHTML = "v";
+						color = color_pal.down;
 				}else{
-					color = "blue";
-					box.style.innerHTML = "-";
+					color = color_pal.nothing;
 				}
 			}else if(env[i][j] == 1){
-				color = "black";
-				box.innerHTML = "Wall at (" + i + "," + j + ")";
+				color = color_pal.wall;
 			}
       if(p.x == j && p.y == i && p.z == layer){
         // Prevent player character from blocking the tile colors!
@@ -310,7 +336,7 @@ function makeDisplay(layer, p){
         // box.style.backgroundSize = "1000px 1000px";
         // box.style.backgroundRepeat = "no-repeat";
         // box.style.backgroundBlendMode = "multiply";
-        box.style.background = "linear-gradient(45deg, " + color + " 50%, #00FFFF 50%)";// "linear-gradient(45 deg, " + color + ", 70%, " + ", red, 30%";
+        box.style.background = "linear-gradient(45deg, " + color + " 50%, " + color_pal.player + " 50%)";
       }else{
         box.style.backgroundColor = color;
       }
@@ -394,7 +420,7 @@ class Timer
 {
     constructor()
     {
-        this.seconds = 60;
+        this.seconds = 25;
         this.step = 1000;
         this.countdown_date = Date.now() + (1000 * this.seconds);
         this.counter = setInterval(() => {
@@ -408,21 +434,27 @@ class Timer
 
                 // Stops the game, or at least the player from moving
                 document.removeEventListener('keydown', input_handler, true);
+                alert("you lose!\npress ok to restart");
+                window.location.reload(false); 
             }
         }, this.step);
     }
 }
 
 function new_game(){
+  currentLevel += 1;
   height += 2;
   width += 2;
+  //depth += 2;
   blank_maze();
   setup_maze(maze);
   player = new Player();
+  document.getElementById("level").innerHTML = currentLevel;
+  timer.countdown_date += 2000 * currentLevel;
 }
 
-new_game();
 timer = new Timer();
+new_game();
 document.addEventListener('keydown', input_handler, true);
 makeDisplay(currentLayer, player); //parameter: z-layer, player class
 
